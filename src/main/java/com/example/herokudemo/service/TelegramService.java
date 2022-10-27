@@ -47,6 +47,7 @@ public class TelegramService {
 
     public String updateSearchTitleKey(String key){
         if(checkPassword(key)){
+            key = key.split("_")[0];
             stringRedisTemplate.opsForValue().set("telegram_title_key", key);
             myBot.setPttSearchTitle(key);
             return key+"_success";
@@ -56,6 +57,7 @@ public class TelegramService {
     }
     public String updateSearchAuthorKey(String key){
         if(checkPassword(key)){
+            key = key.split("_")[0];
             stringRedisTemplate.opsForValue().set("telegram_author_key", key);
             myBot.setPttSearchAuthor(key);
             return key+"_success";
@@ -65,7 +67,12 @@ public class TelegramService {
     }
 
     public boolean checkPassword(String key){
-        return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
+        try{
+            return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void sendMessage(List<Article> articleList){
