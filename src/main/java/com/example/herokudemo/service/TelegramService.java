@@ -26,6 +26,8 @@ public class TelegramService {
 
     @Value("${telegram.chatid}")
     private Long CHAT_ID;
+    @Value("${telegram.updatepassword}")
+    private String UPDATE_PASSWORD;
     @Value("${heroku.url}")
     private String HEROKU_URL;
     @Autowired
@@ -43,16 +45,33 @@ public class TelegramService {
 //        setWebhookInfo(myBot);
     }
 
-    public String updateSearchKey(String key){
-        stringRedisTemplate.opsForValue().set("telegram_key", key);
-        myBot.setPttSearchKey(key);
-        return key+"_success";
+    public String updateSearchTitleKey(String key){
+        if(checkPassword(key)){
+            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+            myBot.setPttSearchTitle(key);
+            return key+"_success";
+        } else {
+            return key+"_fail";
+        }
+    }
+    public String updateSearchAuthorKey(String key){
+        if(checkPassword(key)){
+            stringRedisTemplate.opsForValue().set("telegram_author_key", key);
+            myBot.setPttSearchAuthor(key);
+            return key+"_success";
+        } else {
+            return key+"_fail";
+        }
+    }
+
+    public boolean checkPassword(String key){
+        return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
     }
 
     public void sendMessage(List<Article> articleList){
         // 如果有特定什麼文章 就發送telegram
         for(Article article : articleList){
-           if(article.getTitle().contains(myBot.getPttSearchKey())){
+           if(article.getTitle().contains(myBot.getPttSearchTitle()) || article.getAuthor().contains(myBot.getPttSearchAuthor())){
                String redisKey = article.getTitle()+"_"+article.getParent().getNameCN()+"_"+article.getAuthor()+"_"+article.getDate();
                if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
                    stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+"_"+article.getBody(), 60, TimeUnit.DAYS);
@@ -90,7 +109,7 @@ public class TelegramService {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            response.close();
+            response.body().close();
         }
 
     }

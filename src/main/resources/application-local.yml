@@ -12,5 +12,6 @@ server:
   port: 6006
 telegram:
   chatid: 878586374
+  updatepassword: 123$zxcV
 heroku:
   url: http://localhost:6006/

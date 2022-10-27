@@ -98,7 +98,7 @@ public class Reader {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            response.close();
+            response.body().close();
         }
         return result;
     }

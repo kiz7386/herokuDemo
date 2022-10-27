@@ -12,8 +12,14 @@ public class TelegramController {
     @Autowired
     private TelegramService telegramService;
 
-    @RequestMapping("/v1/telegram/{key}")
-    public String test(@PathVariable String key){
-        return telegramService.updateSearchKey(key);
+    @RequestMapping("/v1/telegram/changeTitle/{key}")
+    public String changeTitle(@PathVariable String key){
+        return telegramService.updateSearchTitleKey(key);
+    }
+
+
+    @RequestMapping("/v1/telegram/changeAuthor/{key}")
+    public String changeAuthor(@PathVariable String key){
+        return telegramService.updateSearchAuthorKey(key);
     }
 }

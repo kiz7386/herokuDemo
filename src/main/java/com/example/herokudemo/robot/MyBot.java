@@ -20,7 +20,8 @@ public class MyBot extends TelegramLongPollingBot {
 
     private String token = "5448080630:AAGDUOWR_QCh2gTwgsENHBJ7hdpKHXcGl84";
     private String userName = "kiz7386_bot";
-    private String pttSearchKey ="退休";
+    private String pttSearchTitleKey ="退休";
+    private String pttSearchAuthorKey ="kiz7386";
 
     public MyBot(){
         this(new DefaultBotOptions());
@@ -28,11 +29,17 @@ public class MyBot extends TelegramLongPollingBot {
     public MyBot(DefaultBotOptions options){
         super(options);
     }
-    public void setPttSearchKey(String key){
-        this.pttSearchKey = key;
+    public void setPttSearchTitle(String key){
+        this.pttSearchTitleKey = key;
     }
-    public String getPttSearchKey(){
-        return this.pttSearchKey;
+    public String getPttSearchTitle(){
+        return this.pttSearchTitleKey;
+    }
+    public void setPttSearchAuthor(String key){
+        this.pttSearchAuthorKey = key;
+    }
+    public String getPttSearchAuthor(){
+        return this.pttSearchAuthorKey;
     }
 
     @Override
@@ -114,7 +121,7 @@ public class MyBot extends TelegramLongPollingBot {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            response.close();
+            response.body().close();
         }
         return result;
     }
@@ -134,7 +141,7 @@ public class MyBot extends TelegramLongPollingBot {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            response.close();
+            response.body().close();
         }
         return result;
     }
