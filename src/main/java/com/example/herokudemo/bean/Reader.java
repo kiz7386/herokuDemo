@@ -1,6 +1,7 @@
 package com.example.herokudemo.bean;
 
 import okhttp3.*;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -50,41 +51,55 @@ public class Reader {
     }
 
     public List<Article> getList(String boardName) throws IOException, ParseException, ParseException {
-        Board board = Config.BOARD_LIST.get(boardName);
-
-        /* 如果找不到指定的看板 */
-        if (board == null) {
-            return null;
-        }
-
-        /* 如果看板需要成年檢查 */
-        if (board.getAdultCheck() == true) {
-            runAdultCheck(board.getUrl());
-        }
-
-        /* 抓取目標頁面 */
-        Request request = new Request.Builder()
-                .url(Config.PTT_URL + board.getUrl())
-                .get()
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-        String body = response.body().string();
-
-        /* 轉換 HTML 到 Article */
-        List<Map<String, String>> articles = parseArticle(body);
+        Response response = null;
         List<Article> result = new ArrayList<>();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd");
+        try {
+            Board board = Config.BOARD_LIST.get(boardName);
 
-        for (Map<String, String> article: articles) {
-            String url = article.get("url");
-            String title = article.get("title");
-            String author = article.get("author");
-            Date date = simpleDateFormat.parse(article.get("date"));
+            /* 如果找不到指定的看板 */
+            if (board == null) {
+                return null;
+            }
 
-            result.add(new Article(board, url, title, author, date));
+            /* 如果看板需要成年檢查 */
+            if (board.getAdultCheck() == true) {
+                runAdultCheck(board.getUrl());
+            }
+
+            /* 抓取目標頁面 */
+            Request request = new Request.Builder()
+                    .url(Config.PTT_URL + board.getUrl())
+                    .get()
+                    .build();
+
+            response = okHttpClient.newCall(request).execute();
+            String body = response.body().string();
+
+            /* 轉換 HTML 到 Article */
+            List<Map<String, String>> articles = parseArticle(body);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd");
+            Date date = Calendar.getInstance().getTime();
+
+            for (Map<String, String> article : articles) {
+                String url = article.get("url");
+                String title = article.get("title");
+                String author = article.get("author");
+                Date authDate = simpleDateFormat.parse(article.get("date"));
+                date.setDate(authDate.getDate());
+                date.setMonth(authDate.getMonth());
+                date.setHours(0);
+                date.setMinutes(0);
+                date.setSeconds(0);
+
+                result.add(new Article(board, url, title, author, date));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            response.close();
         }
-
         return result;
     }
 

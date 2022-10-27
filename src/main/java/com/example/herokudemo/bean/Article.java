@@ -26,7 +26,7 @@ public class Article {
     @Override
     public String toString() {
         return "Article{" +
-                "parent=" + parent +
+                "parent=" + parent.toString() +
                 ", url='" + url + '\'' +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +

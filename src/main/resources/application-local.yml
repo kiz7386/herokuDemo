@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: test
+  redis:
+    host: localhost
+    port: 6379
+#    host: redis-18218.c265.us-east-1-2.ec2.cloud.redislabs.com
+#    port: 18218
+    database: 0
+#    password: QH6u3WrmZOpczFUekWMz3t2yaI2Bi8k0
+server:
+  port: 6006
+telegram:
+  chatid: 878586374
+heroku:
+  url: http://localhost:6006/
