@@ -17,4 +17,14 @@ public class Board {
         this.nameEN = nameEN;
         this.adultCheck = adultCheck;
     }
+
+    @Override
+    public String toString() {
+        return "Board{" +
+                "url='" + url + '\'' +
+                ", nameCN='" + nameCN + '\'' +
+                ", nameEN='" + nameEN + '\'' +
+                ", adultCheck=" + adultCheck +
+                '}';
+    }
 }
