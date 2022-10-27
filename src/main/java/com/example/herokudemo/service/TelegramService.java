@@ -39,8 +39,8 @@ public class TelegramService {
     public void init(){
         okHttpClient = new OkHttpClient();
         myBot = telegramRegister();
-        deleteWebhookInfo(myBot);
-        setWebhookInfo(myBot);
+//        deleteWebhookInfo(myBot);
+//        setWebhookInfo(myBot);
     }
 
     public String updateSearchKey(String key){
@@ -53,7 +53,7 @@ public class TelegramService {
         // 如果有特定什麼文章 就發送telegram
         for(Article article : articleList){
            if(article.getTitle().contains(myBot.getPttSearchKey())){
-               String redisKey = article.getTitle()+"_"+article.getParent().getNameCN()+"_"+article.getDate();
+               String redisKey = article.getTitle()+"_"+article.getParent().getNameCN()+"_"+article.getAuthor()+"_"+article.getDate();
                if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
                    stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+"_"+article.getBody(), 60, TimeUnit.DAYS);
                    myBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , CHAT_ID);
