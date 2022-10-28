@@ -33,13 +33,14 @@ public class TelegramService {
     private String HEROKU_URL;
     @Autowired
     StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    @Qualifier("getOkhttp")
     private OkHttpClient okHttpClient;
 
     private MyBot myBot;
 
     @PostConstruct
     public void init(){
-        okHttpClient = new OkHttpClient();
         myBot = telegramRegister();
 //        deleteWebhookInfo(myBot);
 //        setWebhookInfo(myBot);

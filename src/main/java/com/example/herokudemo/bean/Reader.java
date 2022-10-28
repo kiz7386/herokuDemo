@@ -6,8 +6,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,11 +18,14 @@ import java.util.*;
 
 @Component
 public class Reader {
+    @Autowired
+    @Qualifier("getOkhttp")
     private OkHttpClient okHttpClient;
-    private final Map<String, List<Cookie>> cookieStore; // 保存 Cookie
-    private final CookieJar cookieJar;
+    private Map<String, List<Cookie>> cookieStore; // 保存 Cookie
+    private CookieJar cookieJar;
 
-    public Reader() throws IOException {
+    @PostConstruct
+    public void init() throws Exception{
         /* 初始化 */
         cookieStore = new HashMap<>();
         cookieJar = new CookieJar() {
@@ -43,7 +49,7 @@ public class Reader {
                 );
             }
         };
-        okHttpClient = new OkHttpClient.Builder().cookieJar(cookieJar).build();
+        okHttpClient = okHttpClient.newBuilder().cookieJar(cookieJar).build();
 
         /* 獲得網站的初始 Cookie */
         Request request = new Request.Builder().get().url(Config.PTT_URL).build();
