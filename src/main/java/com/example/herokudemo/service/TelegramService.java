@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,6 @@ public class TelegramService {
     private String HEROKU_URL;
     @Autowired
     StringRedisTemplate stringRedisTemplate;
-
     private OkHttpClient okHttpClient;
 
     private MyBot myBot;
