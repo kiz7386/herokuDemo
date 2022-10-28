@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -25,6 +26,8 @@ public class PttScheduled {
     public void PttScan() throws IOException, ParseException {
         List<Article> result = reader.getList("Gossiping");
         telegramService.sendMessage(result);
-        System.out.println(result.toString());
+        if(!ObjectUtils.isEmpty(result)){
+            System.out.println(result.get(0).toString());
+        }
     }
 }
