@@ -26,6 +26,10 @@ public class Reader {
 
     @PostConstruct
     public void init() throws Exception{
+        Response response =null;
+        try{
+
+
         /* 初始化 */
         cookieStore = new HashMap<>();
         cookieJar = new CookieJar() {
@@ -53,7 +57,14 @@ public class Reader {
 
         /* 獲得網站的初始 Cookie */
         Request request = new Request.Builder().get().url(Config.PTT_URL).build();
-        okHttpClient.newCall(request).execute();
+        response = okHttpClient.newCall(request).execute();
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if(response != null){
+                response.close();
+            }
+        }
     }
 
     public List<Article> getList(String boardName) throws IOException, ParseException, ParseException {

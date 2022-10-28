@@ -25,7 +25,7 @@ public class PttScheduled {
     @Autowired
     TelegramService telegramService;
 
-    @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(fixedDelay = 1000)
     public void PttScan() throws IOException, ParseException {
         List<Article> result = reader.getList("Gossiping");
         telegramService.sendMessage(result);
