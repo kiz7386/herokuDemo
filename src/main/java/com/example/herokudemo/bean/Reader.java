@@ -53,7 +53,7 @@ public class Reader {
                 );
             }
         };
-//        okHttpClient = okHttpClient.newBuilder().cookieJar(cookieJar).build();
+        okHttpClient = okHttpClient.newBuilder().cookieJar(cookieJar).build();
 
         /* 獲得網站的初始 Cookie */
         Request request = new Request.Builder().get().url(Config.PTT_URL).build();
