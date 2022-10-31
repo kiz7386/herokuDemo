@@ -33,9 +33,9 @@ public class TelegramService {
     private String HEROKU_URL;
     @Autowired
     StringRedisTemplate stringRedisTemplate;
-    @Autowired
-    @Qualifier("getOkhttp")
-    private OkHttpClient okHttpClient;
+//    @Autowired
+//    @Qualifier("getOkhttp")
+//    private OkHttpClient okHttpClient;
 
     private MyBot myBot;
 
@@ -89,38 +89,38 @@ public class TelegramService {
            }
         }
     }
-    public void deleteWebhookInfo(MyBot myBot){
-        Response response = null;
-        /* 抓取目標頁面 */
-        Request request = new Request.Builder()
-                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/deleteWebhook?url=" + HEROKU_URL)
-                .get()
-                .build();
-        try {
-            response = okHttpClient.newCall(request).execute();
-            System.out.println(response.body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setWebhookInfo(MyBot myBot){
-        Response response = null;
-        /* 抓取目標頁面 */
-        Request request = new Request.Builder()
-                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/setWebhook?url=" + HEROKU_URL)
-                .get()
-                .build();
-        try {
-            response = okHttpClient.newCall(request).execute();
-            System.out.println(response.body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            response.body().close();
-        }
-
-    }
+//    public void deleteWebhookInfo(MyBot myBot){
+//        Response response = null;
+//        /* 抓取目標頁面 */
+//        Request request = new Request.Builder()
+//                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/deleteWebhook?url=" + HEROKU_URL)
+//                .get()
+//                .build();
+//        try {
+//            response = okHttpClient.newCall(request).execute();
+//            System.out.println(response.body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void setWebhookInfo(MyBot myBot){
+//        Response response = null;
+//        /* 抓取目標頁面 */
+//        Request request = new Request.Builder()
+//                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/setWebhook?url=" + HEROKU_URL)
+//                .get()
+//                .build();
+//        try {
+//            response = okHttpClient.newCall(request).execute();
+//            System.out.println(response.body().string());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            response.body().close();
+//        }
+//
+//    }
 
     public MyBot telegramRegister(){
         // 看localhost or 路由
