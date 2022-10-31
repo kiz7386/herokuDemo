@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.List;
 
 @Component
@@ -23,12 +24,9 @@ public class PttScheduled {
 
 
     @Scheduled(fixedDelay = 1000)
-    public void PttScan() throws URISyntaxException {
+    public void PttScan() throws URISyntaxException, ParseException {
         List<Article> result = restTempLateService.getData("Gossiping");
         telegramService.sendMessage(result);
-        if(!ObjectUtils.isEmpty(result)){
-            System.out.println(result.get(0).toString());
-        }
     }
 
 
