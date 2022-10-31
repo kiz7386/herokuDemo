@@ -18,11 +18,11 @@ import java.util.*;
 
 @Component
 public class Reader {
-    @Autowired
-    @Qualifier("getOkhttp")
-    private OkHttpClient okHttpClient;
-    private Map<String, List<Cookie>> cookieStore; // 保存 Cookie
-    private CookieJar cookieJar;
+//    @Autowired
+//    @Qualifier("getOkhttp")
+//    private OkHttpClient okHttpClient;
+//    private Map<String, List<Cookie>> cookieStore; // 保存 Cookie
+//    private CookieJar cookieJar;
 
 //    @PostConstruct
 //    public void init() throws Exception{
@@ -67,7 +67,7 @@ public class Reader {
 //        }
 //    }
 
-    public List<Article> getList(String boardName) throws IOException, ParseException, ParseException {
+    public List<Article> getList(OkHttpClient okHttpClient, String boardName) throws IOException, ParseException, ParseException {
         Response response = null;
         List<Article> result = new ArrayList<>();
         try {
@@ -80,7 +80,7 @@ public class Reader {
 
             /* 如果看板需要成年檢查 */
             if (board.getAdultCheck() == true) {
-                runAdultCheck(board.getUrl());
+                runAdultCheck(okHttpClient, board.getUrl());
             }
 
             /* 抓取目標頁面 */
@@ -121,7 +121,7 @@ public class Reader {
     }
 
     /* 進行年齡確認 */
-    private void runAdultCheck(String url) throws IOException {
+    private void runAdultCheck(OkHttpClient okHttpClient, String url) throws IOException {
         FormBody formBody = new FormBody.Builder()
                 .add("from", url)
                 .add("yes", "yes")
