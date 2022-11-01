@@ -1,6 +1,7 @@
 package com.example.herokudemo.service;
 
 import com.example.herokudemo.bean.Article;
+import com.example.herokudemo.bean.Config;
 import com.example.herokudemo.robot.MyBot;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -47,60 +48,71 @@ public class TelegramService {
     }
 
 
-    public String updateSearchTitleKey(String key, boolean needCheck){
-        if(needCheck){
-            if(checkPassword(key)){
-                key = key.split("_")[0];
-                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-                myBot.setPttSearchTitle(key);
-                return key+"_success";
-            } else {
-                return key+"_fail";
-            }
-        } else {
-            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-            myBot.setPttSearchTitle(key);
-            return key;
-        }
-    }
-
-    public String updateSearchAuthorKey(String key, boolean needCheck){
-        if(needCheck){
-            if(checkPassword(key)){
-                key = key.split("_")[0];
-                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-                myBot.setPttSearchTitle(key);
-                return key+"_success";
-            } else {
-                return key+"_fail";
-            }
-        } else {
-            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-            myBot.setPttSearchAuthor(key);
-            return key;
-        }
-    }
-
-    public boolean checkPassword(String key){
-        try{
-            return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public String updateSearchTitleKey(String key, boolean needCheck){
+//        if(needCheck){
+//            if(checkPassword(key)){
+//                key = key.split("_")[0];
+//                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+//                myBot.setPttSearchTitle(key);
+//                return key+"_success";
+//            } else {
+//                return key+"_fail";
+//            }
+//        } else {
+//            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+//            myBot.setPttSearchTitle(key);
+//            return key;
+//        }
+//    }
+//
+//    public String updateSearchAuthorKey(String key, boolean needCheck){
+//        if(needCheck){
+//            if(checkPassword(key)){
+//                key = key.split("_")[0];
+//                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+//                myBot.setPttSearchTitle(key);
+//                return key+"_success";
+//            } else {
+//                return key+"_fail";
+//            }
+//        } else {
+//            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+//            myBot.setPttSearchAuthor(key);
+//            return key;
+//        }
+//    }
+//
+//    public boolean checkPassword(String key){
+//        try{
+//            return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
+//        } catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
     public void sendMessage(List<Article> articleList){
         // 如果有特定什麼文章 就發送telegram
         for(Article article : articleList){
-           if(article.getTitle().contains(myBot.getPttSearchTitle()) || article.getAuthor().contains(myBot.getPttSearchAuthor())){
-               String redisKey = article.getTitle()+"_"+article.getParent().getNameCN()+"_"+article.getAuthor()+"_"+article.getDate();
-               if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
-                   stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+"_"+article.getBody(), 60, TimeUnit.DAYS);
-                   myBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , CHAT_ID);
-               }
-
-           }
+            switch (article.getParent().getUrl()){
+                case "/bbs/Gossiping":
+                    if(article.getTitle().contains(myBot.getPttGossipingSearchTitleKey()) || article.getAuthor().contains(myBot.getPttGossipingSearchAuthorKey())){
+                        sendMsg(article);
+                    }
+                    break;
+                case "/bbs/AllTogether":
+                    if(article.getTitle().contains(myBot.getPttAllTogetherSearchTitleKey()) || article.getAuthor().contains(myBot.getPttAllTogetherSearchAuthorKey())){
+                        sendMsg(article);
+                    }
+                    break;
+            }
+        }
+    }
+    public void sendMsg(Article article){
+        String redisKey = article.getTitle()+"_"+article.getParent().getNameCN()+"_"+article.getAuthor()+"_"+article.getDate();
+        if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
+            stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+"_"+article.getBody(), 60, TimeUnit.DAYS);
+            myBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , CHAT_ID);
         }
     }
 //    public void deleteWebhookInfo(MyBot myBot){

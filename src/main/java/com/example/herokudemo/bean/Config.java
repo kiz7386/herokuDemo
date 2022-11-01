@@ -18,5 +18,11 @@ public final class Config {
                 "Gossiping",
                 true)
         );
+        put("AllTogether", new Board(
+                "/bbs/AllTogether",
+                "歐兔",
+                "AllTogether",
+                true)
+        );
     }};
 }

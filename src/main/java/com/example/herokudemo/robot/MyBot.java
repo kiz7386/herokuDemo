@@ -1,5 +1,8 @@
 package com.example.herokudemo.robot;
 
+import com.example.herokudemo.bean.Board;
+import lombok.Getter;
+import lombok.Setter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -21,26 +24,25 @@ public class MyBot extends TelegramLongPollingBot {
     private String UPDATE_PASSWORD ="123$zxcV";
     private String token = "5448080630:AAGDUOWR_QCh2gTwgsENHBJ7hdpKHXcGl84";
     private String userName = "kiz7386_bot";
-    private String pttSearchTitleKey ="退休";
-    private String pttSearchAuthorKey ="kiz7386";
+    @Setter
+    @Getter
+    private String pttGossipingSearchTitleKey ="退休";
+    @Setter
+    @Getter
+    private String pttAllTogetherSearchTitleKey ="徵男";
+    @Setter
+    @Getter
+    private String pttGossipingSearchAuthorKey ="kiz7386";
+    @Setter
+    @Getter
+    private String pttAllTogetherSearchAuthorKey ="kiz7386";
+    private Board board;
 
     public MyBot(){
         this(new DefaultBotOptions());
     }
     public MyBot(DefaultBotOptions options){
         super(options);
-    }
-    public void setPttSearchTitle(String key){
-        this.pttSearchTitleKey = key;
-    }
-    public String getPttSearchTitle(){
-        return this.pttSearchTitleKey;
-    }
-    public void setPttSearchAuthor(String key){
-        this.pttSearchAuthorKey = key;
-    }
-    public String getPttSearchAuthor(){
-        return this.pttSearchAuthorKey;
     }
 
     @Override
@@ -69,56 +71,27 @@ public class MyBot extends TelegramLongPollingBot {
             String s = executeLinuxCms(split[1]);
 
             switch (split[0]){
-                case "changeTitle":
-                    s = updateSearchTitleKey(split[1], false);
+                case "gossipTitle":
+                    this.setPttGossipingSearchTitleKey(split[1]);
+                    s ="搜尋標題設定為 : " + split[1];
                     break;
-                case "changeAuthor":
-                    s = updateSearchAuthorKey(split[1], false);
+                case "gossipAuthor":
+                    this.setPttGossipingSearchAuthorKey(split[1]);
+                    s ="搜尋作者設定為 : " + split[1];
+                    break;
+                case "o2Title":
+                    this.setPttAllTogetherSearchTitleKey(split[1]);
+                    s ="搜尋標題設定為 : " + split[1];
+                    break;
+                case "o2Author":
+                    this.setPttAllTogetherSearchAuthorKey(split[1]);
+                    s ="搜尋作者設定為 : " + split[1];
                     break;
                 default:
                     break;
             }
             sendMsg(s, chatId);
         }
-    }
-
-    public String updateSearchTitleKey(String key, boolean needCheck){
-        if(needCheck){
-            if(checkPassword(key)){
-                key = key.split("_")[0];
-                this.setPttSearchTitle(key);
-                return key+"_success";
-            } else {
-                return key+"_fail";
-            }
-        } else {
-            this.setPttSearchTitle(key);
-            return "搜尋標題設定為 : " + key;
-        }
-    }
-
-    public String updateSearchAuthorKey(String key, boolean needCheck){
-        if(needCheck){
-            if(checkPassword(key)){
-                key = key.split("_")[0];
-                this.setPttSearchTitle(key);
-                return key+"_success";
-            } else {
-                return key+"_fail";
-            }
-        } else {
-            this.setPttSearchAuthor(key);
-            return "搜尋作者設定為 : " + key;
-        }
-    }
-
-    public boolean checkPassword(String key){
-        try{
-            return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        return false;
     }
 
     public void sendMsg(String text, Long chatId){
