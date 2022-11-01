@@ -46,24 +46,38 @@ public class TelegramService {
 //        setWebhookInfo(myBot);
     }
 
-    public String updateSearchTitleKey(String key){
-        if(checkPassword(key)){
-            key = key.split("_")[0];
+
+    public String updateSearchTitleKey(String key, boolean needCheck){
+        if(needCheck){
+            if(checkPassword(key)){
+                key = key.split("_")[0];
+                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+                myBot.setPttSearchTitle(key);
+                return key+"_success";
+            } else {
+                return key+"_fail";
+            }
+        } else {
             stringRedisTemplate.opsForValue().set("telegram_title_key", key);
             myBot.setPttSearchTitle(key);
-            return key+"_success";
-        } else {
-            return key+"_fail";
+            return key;
         }
     }
-    public String updateSearchAuthorKey(String key){
-        if(checkPassword(key)){
-            key = key.split("_")[0];
-            stringRedisTemplate.opsForValue().set("telegram_author_key", key);
-            myBot.setPttSearchAuthor(key);
-            return key+"_success";
+
+    public String updateSearchAuthorKey(String key, boolean needCheck){
+        if(needCheck){
+            if(checkPassword(key)){
+                key = key.split("_")[0];
+                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+                myBot.setPttSearchTitle(key);
+                return key+"_success";
+            } else {
+                return key+"_fail";
+            }
         } else {
-            return key+"_fail";
+            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
+            myBot.setPttSearchAuthor(key);
+            return key;
         }
     }
 
