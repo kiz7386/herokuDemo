@@ -123,7 +123,7 @@ public class TelegramService {
                 case "/bbs/AllTogether":
                     if(isContains(myBot.getPttAllTogetherSearchTitleKey(), article.getTitle()) || isContains(myBot.getPttAllTogetherSearchAuthorKey(), article.getAuthor())){
                         sendMsg(article);
-                        saveSetKey(myBot.getPttGossipingSearchTitleKey(), myBot.getPttGossipingSearchAuthorKey(), "AllTogether");
+                        saveSetKey(myBot.getPttAllTogetherSearchTitleKey(), myBot.getPttAllTogetherSearchAuthorKey(), "AllTogether");
                     }
                     break;
             }
