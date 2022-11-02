@@ -155,7 +155,7 @@ public class TelegramService {
         }
         if(stringRedisTemplate.opsForValue().getOperations().hasKey(authorRedisKey)){
             if(!stringRedisTemplate.opsForValue().get(authorRedisKey).equalsIgnoreCase(botAuthorKey)){
-                stringRedisTemplate.opsForValue().set(titleRedisKey, botAuthorKey);
+                stringRedisTemplate.opsForValue().set(authorRedisKey, botAuthorKey);
             }
         }
 
