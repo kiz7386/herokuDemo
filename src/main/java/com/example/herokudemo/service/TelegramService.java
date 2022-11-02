@@ -18,8 +18,11 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.example.herokudemo.constant.Constants.*;
 
@@ -43,6 +46,7 @@ public class TelegramService {
     @PostConstruct
     public void init(){
         myBot = telegramRegister();
+        setDefaultRedisKey();
 //        deleteWebhookInfo(myBot);
 //        setWebhookInfo(myBot);
     }
@@ -90,30 +94,71 @@ public class TelegramService {
 //        }
 //        return false;
 //    }
+    public void setDefaultRedisKey(){
+        for(Map.Entry entry :Config.BOARD_LIST.entrySet()){
+            switch (entry.getKey().toString()){
+                case "Gossiping":
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+TITLE, myBot.getPttGossipingSearchTitleKey());
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+AUTHOR, myBot.getPttGossipingSearchAuthorKey());
+                    break;
+                case "AllTogether":
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+TITLE, myBot.getPttGossipingSearchTitleKey());
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+AUTHOR, myBot.getPttGossipingSearchAuthorKey());
+                    break;
+
+            }
+        }
+    }
 
     public void sendMessage(List<Article> articleList){
         // 如果有特定什麼文章 就發送telegram
         for(Article article : articleList){
             switch (article.getParent().getUrl()){
                 case "/bbs/Gossiping":
-                    if(article.getTitle().contains(myBot.getPttGossipingSearchTitleKey()) || article.getAuthor().contains(myBot.getPttGossipingSearchAuthorKey())){
+                    if(isContains(myBot.getPttGossipingSearchTitleKey(), article.getTitle()) || isContains(myBot.getPttGossipingSearchAuthorKey(), article.getAuthor())){
                         sendMsg(article);
+                        saveSetKey(myBot.getPttGossipingSearchTitleKey(), myBot.getPttGossipingSearchAuthorKey(), "Gossiping");
                     }
                     break;
                 case "/bbs/AllTogether":
-                    if(article.getTitle().contains(myBot.getPttAllTogetherSearchTitleKey()) || article.getAuthor().contains(myBot.getPttAllTogetherSearchAuthorKey())){
+                    if(isContains(myBot.getPttAllTogetherSearchTitleKey(), article.getTitle()) || isContains(myBot.getPttAllTogetherSearchAuthorKey(), article.getAuthor())){
                         sendMsg(article);
+                        saveSetKey(myBot.getPttGossipingSearchTitleKey(), myBot.getPttGossipingSearchAuthorKey(), "AllTogether");
                     }
                     break;
             }
         }
     }
+
+    public boolean isContains(String botKey, String articleStr){
+        List<String> botList = Arrays.stream(botKey.split(COMMA)).collect(Collectors.toList());
+        return botList.stream().map(o ->articleStr.contains(o)).collect(Collectors.toList()).contains(Boolean.TRUE);
+    }
+
+
     public void sendMsg(Article article){
-        String redisKey = article.getTitle()+"_"+article.getParent().getNameCN()+"_"+article.getAuthor()+"_"+article.getDate();
+        String redisKey = article.getTitle()+UNDER_LINE+article.getParent().getNameCN()+UNDER_LINE+article.getAuthor()+UNDER_LINE+article.getDate();
         if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
-            stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+"_"+article.getBody(), 60, TimeUnit.DAYS);
+            stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+UNDER_LINE+article.getBody(), 60, TimeUnit.DAYS);
             myBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , CHAT_ID);
         }
+    }
+    public void saveSetKey(String botTitleKey, String botAuthorKey, String type){
+        String titleRedisKey ="";
+        String authorRedisKey ="";
+        titleRedisKey = type+UNDER_LINE+TITLE;
+        authorRedisKey = type+UNDER_LINE+AUTHOR;
+        if(stringRedisTemplate.opsForValue().getOperations().hasKey(titleRedisKey)){
+            if(!stringRedisTemplate.opsForValue().get(titleRedisKey).equalsIgnoreCase(botTitleKey)){
+                stringRedisTemplate.opsForValue().set(titleRedisKey, botTitleKey);
+            }
+        }
+        if(stringRedisTemplate.opsForValue().getOperations().hasKey(authorRedisKey)){
+            if(!stringRedisTemplate.opsForValue().get(authorRedisKey).equalsIgnoreCase(botAuthorKey)){
+                stringRedisTemplate.opsForValue().set(titleRedisKey, botAuthorKey);
+            }
+        }
+
     }
 //    public void deleteWebhookInfo(MyBot myBot){
 //        Response response = null;
