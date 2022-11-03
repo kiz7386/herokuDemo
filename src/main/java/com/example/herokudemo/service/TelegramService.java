@@ -2,6 +2,8 @@ package com.example.herokudemo.service;
 
 import com.example.herokudemo.bean.Article;
 import com.example.herokudemo.bean.Config;
+import com.example.herokudemo.robot.Bot;
+import com.example.herokudemo.robot.HouseBot;
 import com.example.herokudemo.robot.MyBot;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -29,101 +32,60 @@ import static com.example.herokudemo.constant.Constants.*;
 @Service
 public class TelegramService {
 
-    @Value("${telegram.chatid}")
-    private Long CHAT_ID;
+    @Value("${telegram.pttchatid}")
+    private Long PTT_CHAT_ID;
+    @Value("${telegram.groupchatid}")
+    private Long GROUP_CHAT_ID;
     @Value("${telegram.updatepassword}")
     private String UPDATE_PASSWORD;
     @Value("${heroku.url}")
     private String HEROKU_URL;
     @Autowired
     StringRedisTemplate stringRedisTemplate;
-//    @Autowired
-//    @Qualifier("getOkhttp")
-//    private OkHttpClient okHttpClient;
 
-    private MyBot myBot;
+    private MyBot pttBot;
+    private HouseBot houseBot;
 
     @PostConstruct
     public void init(){
-        myBot = telegramRegister();
-        setDefaultRedisKey();
-//        deleteWebhookInfo(myBot);
-//        setWebhookInfo(myBot);
+        Map<String, Bot> botMap = telegramRegister();
+        pttBot = (MyBot) botMap.get("pttBot");
+//        houseBot = (HouseBot) botMap.get("groupBot");
+        setPttDefaultRedisKey();
+//        deleteWebhookInfo(pttBot);
+//        setWebhookInfo(pttBot);
     }
 
-
-//    public String updateSearchTitleKey(String key, boolean needCheck){
-//        if(needCheck){
-//            if(checkPassword(key)){
-//                key = key.split("_")[0];
-//                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-//                myBot.setPttSearchTitle(key);
-//                return key+"_success";
-//            } else {
-//                return key+"_fail";
-//            }
-//        } else {
-//            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-//            myBot.setPttSearchTitle(key);
-//            return key;
-//        }
-//    }
-//
-//    public String updateSearchAuthorKey(String key, boolean needCheck){
-//        if(needCheck){
-//            if(checkPassword(key)){
-//                key = key.split("_")[0];
-//                stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-//                myBot.setPttSearchTitle(key);
-//                return key+"_success";
-//            } else {
-//                return key+"_fail";
-//            }
-//        } else {
-//            stringRedisTemplate.opsForValue().set("telegram_title_key", key);
-//            myBot.setPttSearchAuthor(key);
-//            return key;
-//        }
-//    }
-//
-//    public boolean checkPassword(String key){
-//        try{
-//            return UPDATE_PASSWORD.equalsIgnoreCase(key.split("_")[1]);
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
-    public void setDefaultRedisKey(){
+    public void setPttDefaultRedisKey(){
         for(Map.Entry entry :Config.BOARD_LIST.entrySet()){
             switch (entry.getKey().toString()){
                 case "Gossiping":
-                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+TITLE, myBot.getPttGossipingSearchTitleKey());
-                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+AUTHOR, myBot.getPttGossipingSearchAuthorKey());
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+TITLE, pttBot.getPttGossipingSearchTitleKey());
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+AUTHOR, pttBot.getPttGossipingSearchAuthorKey());
                     break;
                 case "AllTogether":
-                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+TITLE, myBot.getPttGossipingSearchTitleKey());
-                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+AUTHOR, myBot.getPttGossipingSearchAuthorKey());
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+TITLE, pttBot.getPttGossipingSearchTitleKey());
+                    stringRedisTemplate.opsForValue().set(entry.getKey()+UNDER_LINE+AUTHOR, pttBot.getPttGossipingSearchAuthorKey());
                     break;
 
             }
         }
     }
 
-    public void sendMessage(List<Article> articleList){
+    public void sendMessage(List<Article> articleList) {
         // 如果有特定什麼文章 就發送telegram
-        for(Article article : articleList){
-            switch (article.getParent().getUrl()){
+        for (Article article : articleList) {
+            switch (article.getParent().getUrl()) {
                 case "/bbs/Gossiping":
-                    if(isContains(myBot.getPttGossipingSearchTitleKey(), article.getTitle()) || isContains(myBot.getPttGossipingSearchAuthorKey(), article.getAuthor())){
+                    if (isContains(pttBot.getPttGossipingSearchTitleKey(), article.getTitle()) || isContains(pttBot.getPttGossipingSearchAuthorKey(), article.getAuthor())) {
                         sendMsg(article);
-                        saveSetKey(myBot.getPttGossipingSearchTitleKey(), myBot.getPttGossipingSearchAuthorKey(), "Gossiping");
+                        saveSetKey(pttBot.getPttGossipingSearchTitleKey(), pttBot.getPttGossipingSearchAuthorKey(), "Gossiping");
                     }
                     break;
                 case "/bbs/AllTogether":
-                    if(isContains(myBot.getPttAllTogetherSearchTitleKey(), article.getTitle()) || isContains(myBot.getPttAllTogetherSearchAuthorKey(), article.getAuthor())){
+                    if (isContains(pttBot.getPttAllTogetherSearchTitleKey(), article.getTitle()) || isContains(pttBot.getPttAllTogetherSearchAuthorKey(), article.getAuthor())) {
                         sendMsg(article);
-                        saveSetKey(myBot.getPttAllTogetherSearchTitleKey(), myBot.getPttAllTogetherSearchAuthorKey(), "AllTogether");
+                        saveSetKey(pttBot.getPttAllTogetherSearchTitleKey(), pttBot.getPttAllTogetherSearchAuthorKey(), "AllTogether");
                     }
                     break;
             }
@@ -135,12 +97,16 @@ public class TelegramService {
         return botList.stream().map(o ->articleStr.contains(o)).collect(Collectors.toList()).contains(Boolean.TRUE);
     }
 
-
+    /**
+     * 將文章資料寫入redis
+     * 且發送到 對應的chat_id
+     */
     public void sendMsg(Article article){
         String redisKey = article.getTitle()+UNDER_LINE+article.getParent().getNameCN()+UNDER_LINE+article.getAuthor()+UNDER_LINE+article.getDate();
         if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
             stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+UNDER_LINE+article.getBody(), 60, TimeUnit.DAYS);
-            myBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , CHAT_ID);
+            pttBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , PTT_CHAT_ID);
+            pttBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , GROUP_CHAT_ID);
         }
     }
     public void saveSetKey(String botTitleKey, String botAuthorKey, String type){
@@ -160,11 +126,11 @@ public class TelegramService {
         }
 
     }
-//    public void deleteWebhookInfo(MyBot myBot){
+//    public void deleteWebhookInfo(pttBot pttBot){
 //        Response response = null;
 //        /* 抓取目標頁面 */
 //        Request request = new Request.Builder()
-//                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/deleteWebhook?url=" + HEROKU_URL)
+//                .url(TELEGRAM_URL + "bot" + pttBot.getBotToken() +"/deleteWebhook?url=" + HEROKU_URL)
 //                .get()
 //                .build();
 //        try {
@@ -175,11 +141,11 @@ public class TelegramService {
 //        }
 //    }
 //
-//    public void setWebhookInfo(MyBot myBot){
+//    public void setWebhookInfo(pttBot pttBot){
 //        Response response = null;
 //        /* 抓取目標頁面 */
 //        Request request = new Request.Builder()
-//                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/setWebhook?url=" + HEROKU_URL)
+//                .url(TELEGRAM_URL + "bot" + pttBot.getBotToken() +"/setWebhook?url=" + HEROKU_URL)
 //                .get()
 //                .build();
 //        try {
@@ -193,7 +159,7 @@ public class TelegramService {
 //
 //    }
 
-    public MyBot telegramRegister(){
+    public Map<String, Bot> telegramRegister(){
         // 看localhost or 路由
         int proxyPort = 6006;
 
@@ -213,8 +179,13 @@ public class TelegramService {
 //            telegramBotsApi.registerBot(bot);
             // 不需要代理
             MyBot bot2 = new MyBot();
+//            HouseBot bot3 = new HouseBot();
             telegramBotsApi.registerBot(bot2);
-            return bot2;
+//            telegramBotsApi.registerBot(bot3);
+            Map<String, Bot> map = new ConcurrentHashMap<>();
+            map.put("pttBot", bot2);
+//            map.put("group", bot3);
+            return map;
         } catch (TelegramApiException e){
             e.printStackTrace();
         }
@@ -237,10 +208,10 @@ public class TelegramService {
 //            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(defaultBotSession.getClass());
 //
 //            // 需要代理
-////            MyBot bot = new MyBot(botOptions);
+////            pttBot bot = new pttBot(botOptions);
 ////            telegramBotsApi.registerBot(bot);
 //            // 不需要代理
-//            MyBot bot2 = new MyBot();
+//            pttBot bot2 = new pttBot();
 //            telegramBotsApi.registerBot(bot2);
 //        } catch (TelegramApiException e){
 //            e.printStackTrace();

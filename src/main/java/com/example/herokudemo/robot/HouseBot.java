@@ -1,8 +1,5 @@
 package com.example.herokudemo.robot;
 
-import com.example.herokudemo.bean.Board;
-import lombok.Getter;
-import lombok.Setter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -19,29 +16,16 @@ import java.io.InputStreamReader;
 
 import static com.example.herokudemo.constant.Constants.TELEGRAM_URL;
 
-public class MyBot extends TelegramLongPollingBot implements Bot{
+public class HouseBot extends TelegramLongPollingBot implements Bot{
 
     private String UPDATE_PASSWORD ="123$zxcV";
-    private String token = "5448080630:AAGDUOWR_QCh2gTwgsENHBJ7hdpKHXcGl84";
-    private String userName = "kiz7386_bot";
-    @Setter
-    @Getter
-    private String pttGossipingSearchTitleKey ="退休";
-    @Setter
-    @Getter
-    private String pttAllTogetherSearchTitleKey ="徵男";
-    @Setter
-    @Getter
-    private String pttGossipingSearchAuthorKey ="kiz7386";
-    @Setter
-    @Getter
-    private String pttAllTogetherSearchAuthorKey ="kiz7386";
-    private Board board;
+    private String token = "5705257652:AAED1RneKVPoLQdZqa2y7RdjWEkE7z494aU";
+    private String userName = "house591_bot";
 
-    public MyBot(){
+    public HouseBot(){
         this(new DefaultBotOptions());
     }
-    public MyBot(DefaultBotOptions options){
+    public HouseBot(DefaultBotOptions options){
         super(options);
     }
 
@@ -73,27 +57,11 @@ public class MyBot extends TelegramLongPollingBot implements Bot{
                 case "chatId":
                     s ="chatId : " + chatId;
                     break;
-                case "gossipTitle":
-                    this.setPttGossipingSearchTitleKey(split[1]);
-                    s ="搜尋標題設定為 : " + split[1];
-                    break;
-                case "gossipAuthor":
-                    this.setPttGossipingSearchAuthorKey(split[1]);
-                    s ="搜尋作者設定為 : " + split[1];
-                    break;
-                case "o2Title":
-                    this.setPttAllTogetherSearchTitleKey(split[1]);
-                    s ="搜尋標題設定為 : " + split[1];
-                    break;
-                case "o2Author":
-                    this.setPttAllTogetherSearchAuthorKey(split[1]);
-                    s ="搜尋作者設定為 : " + split[1];
-                    break;
                 default:
                     s = "無此關鍵字";
                     break;
             }
-            sendMsg(s, chatId);
+//            sendMsg(s, chatId);
         }
     }
 
@@ -132,7 +100,7 @@ public class MyBot extends TelegramLongPollingBot implements Bot{
         return null;
     }
 
-    public String getWebhookInfo(MyBot myBot){
+    public String getWebhookInfo(HouseBot myBot){
         OkHttpClient okHttpClient = new OkHttpClient();
         Response response = null;
         String result = "";
@@ -152,7 +120,7 @@ public class MyBot extends TelegramLongPollingBot implements Bot{
         }
         return result;
     }
-    public String getUpdates(MyBot myBot){
+    public String getUpdates(HouseBot myBot){
         OkHttpClient okHttpClient = new OkHttpClient();
         Response response = null;
         String result = "";
