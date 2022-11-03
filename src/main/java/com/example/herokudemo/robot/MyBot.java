@@ -71,6 +71,9 @@ public class MyBot extends TelegramLongPollingBot {
             String s = executeLinuxCms(split[1]);
 
             switch (split[0]){
+                case "chatId":
+                    s ="chatId : " + chatId;
+                    break;
                 case "gossipTitle":
                     this.setPttGossipingSearchTitleKey(split[1]);
                     s ="搜尋標題設定為 : " + split[1];
