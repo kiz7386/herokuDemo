@@ -63,7 +63,7 @@ public class MyBot extends TelegramLongPollingBot implements Bot{
             String text = message.getText();
             String[] split = text.split("=");
             if(split.length == 1){
-                sendMsg("不處理該類型指令", chatId);
+//                sendMsg("不處理該類型指令", chatId);
                 return;
             }
             String s = "";

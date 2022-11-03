@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -114,13 +115,15 @@ public class TelegramService {
         String authorRedisKey ="";
         titleRedisKey = type+UNDER_LINE+TITLE;
         authorRedisKey = type+UNDER_LINE+AUTHOR;
-        if(stringRedisTemplate.opsForValue().getOperations().hasKey(titleRedisKey)){
-            if(!stringRedisTemplate.opsForValue().get(titleRedisKey).equalsIgnoreCase(botTitleKey)){
+        String titleValue = stringRedisTemplate.opsForValue().get(titleRedisKey);
+        String authorValue = stringRedisTemplate.opsForValue().get(authorRedisKey);
+        if(!ObjectUtils.isEmpty(titleValue)){
+            if(!titleValue.equalsIgnoreCase(botTitleKey)){
                 stringRedisTemplate.opsForValue().set(titleRedisKey, botTitleKey);
             }
         }
-        if(stringRedisTemplate.opsForValue().getOperations().hasKey(authorRedisKey)){
-            if(!stringRedisTemplate.opsForValue().get(authorRedisKey).equalsIgnoreCase(botAuthorKey)){
+        if(!ObjectUtils.isEmpty(authorValue)){
+            if(!authorValue.equalsIgnoreCase(botAuthorKey)){
                 stringRedisTemplate.opsForValue().set(authorRedisKey, botAuthorKey);
             }
         }
