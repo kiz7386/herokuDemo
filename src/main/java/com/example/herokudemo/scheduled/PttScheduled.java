@@ -23,7 +23,7 @@ public class PttScheduled {
     TelegramService telegramService;
 
 
-    @Scheduled(fixedDelay = 7000)
+    @Scheduled(fixedDelay = 6000)
     public void PttGossipingScan() throws URISyntaxException, ParseException {
         List<Article> result = restTempLateService.getData("Gossiping");
         telegramService.sendMessage(result);
