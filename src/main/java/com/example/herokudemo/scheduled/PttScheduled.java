@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -23,12 +22,12 @@ public class PttScheduled {
     TelegramService telegramService;
 
 
-    @Scheduled(fixedDelay = 6000)
+    @Scheduled(cron = "4/5 * * * * ?")
     public void PttGossipingScan() throws URISyntaxException, ParseException {
         List<Article> result = restTempLateService.getData("Gossiping");
         telegramService.sendMessage(result);
     }
-    @Scheduled(fixedDelay = 7000)
+    @Scheduled(cron = "2/5 * * * * ?")
     public void PttAllTogetherScan() throws URISyntaxException, ParseException {
         List<Article> result = restTempLateService.getData("AllTogether");
         telegramService.sendMessage(result);
