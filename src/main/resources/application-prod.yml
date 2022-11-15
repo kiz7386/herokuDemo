@@ -4,10 +4,10 @@ spring:
   redis:
 #    host: localhost
 #    port: 6379
-    host: redis://srv-captain--vzumsidfqx-redis-6x
+    host: redis://srv-captain--porfcdwevm-redis
     port: 6379
     database: 0
-    password: jT7VIJRxHpiYafd9
+    password: rQlLGgBfxZREXkhp
 server:
   port: 8080
 telegram:
@@ -17,4 +17,4 @@ telegram:
 #heroku:
 #  url: https://twkiz-1.herokuapp.com/
 heroku:
-  url: https://vzumsidfqx.us15.qoddiapp.com/
+  url: https://vdtuijckox.us15.qoddiapp.com/
