@@ -4,15 +4,17 @@ spring:
   redis:
 #    host: localhost
 #    port: 6379
-    host: redis-18218.c265.us-east-1-2.ec2.cloud.redislabs.com
-    port: 18218
+    host: srv-captain--vzumsidfqx-redis-6x
+    port: 8080
     database: 0
-    password: QH6u3WrmZOpczFUekWMz3t2yaI2Bi8k0
+    password: jT7VIJRxHpiYafd9
 server:
   port: 6006
 telegram:
   pttchatid: 878586374
   updatepassword: 123$zxcV
   groupchatid: -898857219
+#heroku:
+#  url: https://twkiz-1.herokuapp.com/
 heroku:
-  url: https://twkiz-1.herokuapp.com/
+  url: https://vzumsidfqx.us15.qoddiapp.com/
