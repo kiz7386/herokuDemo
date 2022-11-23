@@ -105,7 +105,7 @@ public class TelegramService {
     public void sendMsg(Article article){
         String redisKey = article.getTitle()+UNDER_LINE+article.getParent().getNameCN()+UNDER_LINE+article.getAuthor()+UNDER_LINE+article.getDate();
         if(!stringRedisTemplate.opsForValue().getOperations().hasKey(redisKey)){
-            stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+UNDER_LINE+article.getBody(), 60, TimeUnit.DAYS);
+            stringRedisTemplate.opsForValue().set(redisKey, article.getAuthor()+UNDER_LINE+article.getBody()+UNDER_LINE+PTT_URL+article.getUrl(), 60, TimeUnit.DAYS);
             pttBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , PTT_CHAT_ID);
             pttBot.sendMsg(redisKey+" "+PTT_URL+article.getUrl() , GROUP_CHAT_ID);
         }
