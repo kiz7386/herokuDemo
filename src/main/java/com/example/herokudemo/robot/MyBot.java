@@ -108,69 +108,69 @@ public class MyBot extends TelegramLongPollingBot implements Bot{
         }
     }
 
-    public String executeLinuxCms(String cmd){
-        System.out.println("執行指令[ " + cmd + " ]");
-        Runtime run = Runtime.getRuntime();
-        try {
-            Process process = run.exec(cmd);
-            String line;
-            BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuffer out = new StringBuffer();
-            while ((line = stdoutReader.readLine()) != null){
-                out.append(line+"\n");
-            }
-            try{
-                process.waitFor();
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
-            process.destroy();
-            return out.toString();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getWebhookInfo(MyBot myBot){
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Response response = null;
-        String result = "";
-        /* 抓取目標頁面 */
-        Request request = new Request.Builder()
-                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/getWebhookInfo")
-                .get()
-                .build();
-        try {
-            response = okHttpClient.newCall(request).execute();
-            result = response.body().string();
-            System.out.println(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            response.body().close();
-        }
-        return result;
-    }
-    public String getUpdates(MyBot myBot){
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Response response = null;
-        String result = "";
-        /* 抓取目標頁面 */
-        Request request = new Request.Builder()
-                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/getUpdates")
-                .get()
-                .build();
-        try {
-            response = okHttpClient.newCall(request).execute();
-            result = response.body().string();
-            System.out.println(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            response.body().close();
-        }
-        return result;
-    }
+//    public String executeLinuxCms(String cmd){
+//        System.out.println("執行指令[ " + cmd + " ]");
+//        Runtime run = Runtime.getRuntime();
+//        try {
+//            Process process = run.exec(cmd);
+//            String line;
+//            BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//            StringBuffer out = new StringBuffer();
+//            while ((line = stdoutReader.readLine()) != null){
+//                out.append(line+"\n");
+//            }
+//            try{
+//                process.waitFor();
+//            } catch (InterruptedException e){
+//                e.printStackTrace();
+//            }
+//            process.destroy();
+//            return out.toString();
+//        } catch (IOException e){
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//    public String getWebhookInfo(MyBot myBot){
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        Response response = null;
+//        String result = "";
+//        /* 抓取目標頁面 */
+//        Request request = new Request.Builder()
+//                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/getWebhookInfo")
+//                .get()
+//                .build();
+//        try {
+//            response = okHttpClient.newCall(request).execute();
+//            result = response.body().string();
+//            System.out.println(result);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            response.body().close();
+//        }
+//        return result;
+//    }
+//    public String getUpdates(MyBot myBot){
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        Response response = null;
+//        String result = "";
+//        /* 抓取目標頁面 */
+//        Request request = new Request.Builder()
+//                .url(TELEGRAM_URL + "bot" + myBot.getBotToken() +"/getUpdates")
+//                .get()
+//                .build();
+//        try {
+//            response = okHttpClient.newCall(request).execute();
+//            result = response.body().string();
+//            System.out.println(result);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            response.body().close();
+//        }
+//        return result;
+//    }
 
 }

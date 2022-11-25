@@ -27,7 +27,7 @@ public class PttScheduled {
         List<Article> result = restTempLateService.getData("Gossiping");
         telegramService.sendMessage(result);
     }
-    @Scheduled(cron = "30/60 * * * * ?")
+    @Scheduled(cron = "40/60 * * * * ?")
     public void PttAllTogetherScan() throws URISyntaxException, ParseException {
         List<Article> result = restTempLateService.getData("AllTogether");
         telegramService.sendMessage(result);
